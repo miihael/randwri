@@ -2,7 +2,7 @@ use std::fs::OpenOptions;
 use std::io::{BufWriter, Write};
 use std::path::PathBuf;
 use clap::Parser;
-use rand::{Rng, SeedableRng};
+use rand::RngExt;
 use rand::rngs::SmallRng;
 use indicatif::{ProgressBar, ProgressStyle};
 
@@ -63,6 +63,7 @@ fn main() {
     let file = OpenOptions::new()
         .create(true)
         .write(true)
+        .truncate(false)
         .open(&args.output)
         .expect("Failed to open output file");
     
@@ -80,7 +81,7 @@ fn main() {
     );
 
     // Use fast non-crypto RNG (SmallRng is much faster than thread_rng)
-    let mut rng = SmallRng::from_entropy();
+    let mut rng: SmallRng = rand::make_rng();
     let mut remaining = args.size;
     let mut written = 0u64;
 
